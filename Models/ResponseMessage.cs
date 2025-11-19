@@ -1,6 +1,4 @@
-using System;
-
-namespace TShockPlugin.Models;
+namespace Mechdusa.Models;
 
 public struct ResponseMessage
 {

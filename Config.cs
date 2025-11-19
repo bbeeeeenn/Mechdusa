@@ -1,9 +1,9 @@
+using Mechdusa.Models;
 using Microsoft.Xna.Framework;
 using Newtonsoft.Json;
 using TShockAPI;
-using TShockPlugin.Models;
 
-namespace TShockPlugin;
+namespace Mechdusa;
 
 public class PluginSettings
 {
@@ -15,7 +15,18 @@ public class PluginSettings
 
     public static PluginSettings Config { get; set; } = new();
     #region Configs
-
+    public bool Enabled = true;
+    public bool DisableIndividualMech = true;
+    public string[] SpawnMechdusaCommandAliases = new string[] { "mechdusa", "mq" };
+    public int SendCraftingHintIntervalSeconds = 10;
+    public string NOTE1 =
+        "Everything will be set to normal if the world is already able to spawn Mechdusa.";
+    public string NOTE2 =
+        "If [DisableIndividualMech] is set to true, player inventories will automatically craft an Ocram's Razor if they have all three different mech spawners.";
+    public string NOTE3 =
+        "The spawn-mechdusa-command requires 'mechdusa.admin' permision. You have to restart the server before the [SpawnMechdusaCommandAliases] changes are applied.";
+    public string NOTE4 =
+        "Spawning multiple Mechdusa instances can cause unexpected behavior because of the max-NPC cap limitation. Though, this can only be achieved using the command.";
     #endregion
     public static void Save()
     {

@@ -1,9 +1,9 @@
+using Mechdusa.Models;
 using TerrariaApi.Server;
 using TShockAPI;
 using TShockAPI.Hooks;
-using TShockPlugin.Models;
 
-namespace TShockPlugin.Events;
+namespace Mechdusa.Events;
 
 public class OnReload : Event
 {

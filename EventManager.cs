@@ -1,8 +1,8 @@
+using Mechdusa.Events;
+using Mechdusa.Models;
 using TerrariaApi.Server;
-using TShockPlugin.Events;
-using TShockPlugin.Models;
 
-namespace TShockPlugin;
+namespace Mechdusa;
 
 public class EventManager
 {
@@ -10,6 +10,9 @@ public class EventManager
     {
         // Events
         new OnReload(),
+        new OnGetData(),
+        new OnNpcSpawn(),
+        new OnServerBroadcast(),
     };
 
     public static void RegisterAll(TerrariaPlugin plugin)

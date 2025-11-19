@@ -1,6 +1,6 @@
 using TerrariaApi.Server;
 
-namespace TShockPlugin.Models;
+namespace Mechdusa.Models;
 
 public abstract class Event
 {

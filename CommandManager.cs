@@ -1,14 +1,16 @@
-using TShockPlugin.Commands;
-using TShockPlugin.Models;
+using Mechdusa.Commands;
+using Mechdusa.Models;
 
-namespace TShockPlugin;
+namespace Mechdusa;
 
 public class CommandManager
 {
     public static readonly List<Command> Commands = new()
     {
         // Commands
-        new DummyCommand(),
+        new Commands.Mechdusa(),
+        new CraftOcramRazor(),
+        // new Test(),
     };
 
     public static void RegisterAll()
