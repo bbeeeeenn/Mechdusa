@@ -14,6 +14,7 @@ public class Mechdusa : Models.Command
     public override void Execute(CommandArgs args)
     {
         TSPlayer player = args.Player;
+        Variables.AllowMechs();
         bool spawned;
         if (args.Parameters.Count == 0)
         {
@@ -22,6 +23,7 @@ public class Mechdusa : Models.Command
                 player.SendMessage("Example usage: /mechdusa <playername>", Color.Red);
                 return;
             }
+            Variables.AllowMechs();
             spawned = Utilities.TrySpawnMechdusa(player);
         }
         else
@@ -52,6 +54,7 @@ public class Mechdusa : Models.Command
                 player.SendMessage("Target not found.", Color.Red);
                 return;
             }
+            Variables.AllowMechs();
             spawned = Utilities.TrySpawnMechdusa(targetPlayer);
         }
 
@@ -65,5 +68,6 @@ public class Mechdusa : Models.Command
         {
             player.SendMessage("Mechdusa could not be summoned right now.", Color.Red);
         }
+        // Variables.AllowedSpawn.Clear();
     }
 }

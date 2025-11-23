@@ -24,7 +24,7 @@ public class PluginSettings
     public string NOTE2 =
         "If [DisableIndividualMech] is set to true, player inventories will automatically craft an Ocram's Razor if they have all three different mech spawners.";
     public string NOTE3 =
-        "The spawn-mechdusa-command requires 'mechdusa.admin' permision. You have to restart the server before the [SpawnMechdusaCommandAliases] changes are applied.";
+        "The spawn-mechdusa-command requires 'mechdusa.admin' permission. You have to restart the server before the [SpawnMechdusaCommandAliases] changes are applied.";
     public string NOTE4 =
         "Spawning multiple Mechdusa instances can cause unexpected behavior because of the max-NPC cap limitation. Though, this can only be achieved using the command.";
     #endregion

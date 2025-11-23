@@ -1,10 +1,6 @@
-using System;
-using IL.Terraria.ID;
 using Mechdusa.Models;
-using Microsoft.Xna.Framework;
 using Terraria;
 using TerrariaApi.Server;
-using TShockAPI;
 
 namespace Mechdusa.Events;
 
@@ -21,6 +17,7 @@ public class OnNpcSpawn : Event
     }
 
     private void EventMethod(NpcSpawnEventArgs args)
+    // For server-side Mech boss spawn check
     {
         if (
             Main.getGoodWorld
@@ -39,7 +36,7 @@ public class OnNpcSpawn : Event
         )
         {
             npc.active = false;
-            NetMessage.SendData((int)PacketTypes.NpcUpdate, -1, -1, null, args.NpcId);
+            args.Handled = true;
         }
     }
 }

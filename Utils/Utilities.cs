@@ -100,6 +100,8 @@ public class Utilities
         }
         plr.SendData(PacketTypes.PlayerSlot, null, plr.Index, availableSlotIndex);
         plr.SetData("ignoreSlot", new HashSet<int>());
+
+        NetMessage.PlayNetSound(new NetMessage.NetSoundInfo(plr.TPlayer.position, 213), plr.Index);
         return minAmountToCraft;
     }
 

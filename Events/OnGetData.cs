@@ -24,15 +24,26 @@ public class OnGetData : Event
         // TShock.Utils.Broadcast($"{args.MsgID}", Color.AliceBlue);
         // return;
         if (Main.remixWorld || Main.getGoodWorld || !PluginSettings.Config.Enabled)
+        {
             return;
+        }
 
+        using BinaryReader reader = new(
+            new MemoryStream(args.Msg.readBuffer, args.Index, args.Length)
+        );
         switch (args.MsgID)
         {
             case PacketTypes.PlayerSlot:
             {
-                PreventSummonItemConsumption(args);
-                SendHelpMessageForMechSummons(args);
-                AutoCraftOcramsRazor(args);
+                byte playerId = reader.ReadByte();
+                short slot = reader.ReadInt16();
+                short stack = reader.ReadInt16();
+                byte prefix = reader.ReadByte();
+                short netId = reader.ReadInt16();
+
+                PreventSummonItemConsumption(args, playerId, netId, slot, stack);
+                SendHelpMessageForMechSummons(args, netId);
+                AutoCraftOcramsRazor(args, playerId, netId, slot, prefix, stack);
                 break;
             }
             case PacketTypes.SpawnBossorInvasion:
@@ -50,6 +61,17 @@ public class OnGetData : Event
         }
     }
 
+    private static ushort _index = 0;
+    private static ushort Index
+    {
+        get => _index;
+        set
+        {
+            if (value >= 0)
+                _index = value;
+        }
+    }
+
     private static void UseOcramsRazor(GetDataEventArgs args)
     {
         using BinaryReader reader = new(
@@ -57,6 +79,7 @@ public class OnGetData : Event
         );
         byte playerid = reader.ReadByte();
         BitsByte control = reader.ReadByte();
+
         _ = reader.ReadByte();
         _ = reader.ReadByte();
         _ = reader.ReadByte();
@@ -64,6 +87,21 @@ public class OnGetData : Event
         TSPlayer player = TShock.Players[playerid];
         if (player == null || !player.Active)
             return;
+
+        // // Temp - Play SFXs
+        // bool left = control[2],
+        //     right = control[3];
+        // if (left && !right)
+        // {
+        //     player.SendMessage($"Playing sound index: {--Index}", Color.AliceBlue);
+        //     NetMessage.PlayNetSound(new NetMessage.NetSoundInfo(player.TPlayer.position, Index));
+        // }
+        // else if (!left && right)
+        // {
+        //     player.SendMessage($"Playing sound index: {++Index}", Color.AliceBlue);
+        //     NetMessage.PlayNetSound(new NetMessage.NetSoundInfo(player.TPlayer.position, Index));
+        // }
+        // // Temp
 
         bool useItem = control[5];
         Item selectedItem = player.TPlayer.inventory[selectedItemSlot];
@@ -91,21 +129,21 @@ public class OnGetData : Event
         }
     }
 
-    private static void AutoCraftOcramsRazor(GetDataEventArgs args)
+    private static void AutoCraftOcramsRazor(
+        GetDataEventArgs args,
+        int playerId,
+        int netId,
+        int slot,
+        byte prefix,
+        int stack
+    )
     {
         TSPlayer player = TShock.Players[args.Msg.whoAmI];
         if (player == null)
         {
             return;
         }
-        using BinaryReader reader = new(
-            new MemoryStream(args.Msg.readBuffer, args.Index, args.Length)
-        );
-        byte playerId = reader.ReadByte();
-        short slot = reader.ReadInt16();
-        short stack = reader.ReadInt16();
-        byte prefix = reader.ReadByte();
-        short netId = reader.ReadInt16();
+
         if (!Variables.MechBossAndSummonItem.ContainsValue(netId))
         {
             return;
@@ -139,28 +177,19 @@ public class OnGetData : Event
         if (amount >= 1)
         {
             player.SendMessage(
-                $"Crafted {amount} [c/{Colors.RarityOrange.Hex3()}:Ocram's Razor].",
+                $"Auto-crafted {amount} [c/{Colors.RarityOrange.Hex3()}:Ocram's Razor].",
                 Color.LimeGreen
             );
         }
     }
 
-    private static void SendHelpMessageForMechSummons(GetDataEventArgs args)
+    private static void SendHelpMessageForMechSummons(GetDataEventArgs args, int netId)
     {
         TSPlayer player = TShock.Players[args.Msg.whoAmI];
         if (player == null)
         {
             return;
         }
-
-        using BinaryReader reader = new(
-            new MemoryStream(args.Msg.readBuffer, args.Index, args.Length)
-        );
-        _ = reader.ReadByte();
-        _ = reader.ReadInt16();
-        _ = reader.ReadInt16();
-        _ = reader.ReadByte();
-        short netId = reader.ReadInt16();
 
         if (!Variables.MechBossAndSummonItem.ContainsValue(netId))
         {
@@ -187,7 +216,7 @@ public class OnGetData : Event
             else
             {
                 player.SendMessage(
-                    $"You can craft the [c/{Colors.RarityOrange.Hex3()}:Ocram's Razor] using the command [c/ffffff:/craftocramrazor] or [c/ffffff:/cor].",
+                    $"[c/{Colors.RarityOrange.Hex3()}:{TShock.Utils.GetItemById(netId).Name}], along with the other two Mech spawners, can be combined into [c/{Colors.RarityOrange.Hex3()}:Ocram's Razor] using the command [c/ffffff:/craftocramrazor] or [c/ffffff:/cor].",
                     Color.LimeGreen
                 );
             }
@@ -199,7 +228,9 @@ public class OnGetData : Event
     private static void DisableMechSpawn(GetDataEventArgs args)
     {
         if (!PluginSettings.Config.DisableIndividualMech)
+        {
             return;
+        }
 
         using BinaryReader reader = new(
             new MemoryStream(args.Msg.readBuffer, args.Index, args.Length)
@@ -215,22 +246,18 @@ public class OnGetData : Event
         }
     }
 
-    private static void PreventSummonItemConsumption(GetDataEventArgs args)
+    private static void PreventSummonItemConsumption(
+        GetDataEventArgs args,
+        int playerId,
+        int netId,
+        int slot,
+        int stack
+    )
     {
         if (!PluginSettings.Config.DisableIndividualMech)
             return;
 
-        using BinaryReader reader = new(
-            new MemoryStream(args.Msg.readBuffer, args.Index, args.Length)
-        );
-        byte playerId = reader.ReadByte();
-        short slot = reader.ReadInt16();
-        short stack = reader.ReadInt16();
-        byte prefix = reader.ReadByte();
-        short netId = reader.ReadInt16();
-
         Player tplayer = Main.player[playerId];
-        Item item = TShock.Utils.GetItemById(netId);
         if (
             Variables.PreventItemUsage.Remove(netId)
             && Variables.MechBossAndSummonItem.ContainsValue(netId)
