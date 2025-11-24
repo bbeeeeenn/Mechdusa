@@ -26,7 +26,7 @@ public class OnNpcKilled : Models.Event
 
         if (Variables.SpawnedMechQueen && Variables.MechsLeft.Remove(args.npc.whoAmI))
         {
-            if (!Variables.MechBossAndSummonItem.ContainsKey(args.npc.netID))
+            if (!Variables.MechBossesAndTheirSummonItem.ContainsKey(args.npc.netID))
             {
                 Variables.SpawnedMechQueen = false;
                 return;

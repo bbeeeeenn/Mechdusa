@@ -5,7 +5,7 @@ namespace Mechdusa;
 
 public static class Variables
 {
-    public static readonly Dictionary<int, int> MechBossAndSummonItem = new()
+    public static readonly Dictionary<int, int> MechBossesAndTheirSummonItem = new()
     {
         { NPCID.TheDestroyer, ItemID.MechanicalWorm },
         { NPCID.Spazmatism, ItemID.MechanicalEye },
@@ -18,7 +18,7 @@ public static class Variables
 
     public static void AllowMechs()
     {
-        foreach (int boss in MechBossAndSummonItem.Keys)
+        foreach (int boss in MechBossesAndTheirSummonItem.Keys)
         {
             AllowedToSpawn.Add(boss);
         }
@@ -35,7 +35,7 @@ public static class Variables
             MechsLeft.Clear();
             if (value)
             {
-                foreach (int netId in MechBossAndSummonItem.Keys)
+                foreach (int netId in MechBossesAndTheirSummonItem.Keys)
                 {
                     MechsLeft.Add(NPC.FindFirstNPC(netId));
                 }

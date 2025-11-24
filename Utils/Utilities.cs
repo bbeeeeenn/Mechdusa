@@ -16,7 +16,7 @@ public static class Utilities
         {
             Item currItem = inv[i];
             if (
-                Variables.MechBossAndSummonItem.ContainsValue(currItem.netID)
+                Variables.MechBossesAndTheirSummonItem.ContainsValue(currItem.netID)
                 && currItem.stack > 0
                 && !found.Contains(currItem.netID)
             )
@@ -64,7 +64,7 @@ public static class Utilities
             if (
                 currItem.stack == 0
                 || (
-                    Variables.MechBossAndSummonItem.ContainsValue(currItem.netID)
+                    Variables.MechBossesAndTheirSummonItem.ContainsValue(currItem.netID)
                     && currItem.stack == minAmountToCraft
                 )
             )
@@ -150,7 +150,7 @@ public static class Utilities
                 NPC.GetBossSpawnSource(onWhichPlayer),
                 (int)Main.npc[NPC.mechQueen].Center.X,
                 (int)Main.npc[NPC.mechQueen].Center.Y,
-                139,
+                139, // Probe Boob
                 1,
                 0f,
                 0f,
@@ -164,7 +164,7 @@ public static class Utilities
                 NPC.GetBossSpawnSource(onWhichPlayer),
                 (int)Main.npc[NPC.mechQueen].Center.X,
                 (int)Main.npc[NPC.mechQueen].Center.Y,
-                139,
+                139, // Probe Boob
                 1,
                 0f,
                 0f,

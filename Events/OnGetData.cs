@@ -121,7 +121,7 @@ public class OnGetData : Event
             return;
         }
 
-        if (!Variables.MechBossAndSummonItem.ContainsValue(netId))
+        if (!Variables.MechBossesAndTheirSummonItem.ContainsValue(netId))
         {
             return;
         }
@@ -168,7 +168,7 @@ public class OnGetData : Event
             return;
         }
 
-        if (!Variables.MechBossAndSummonItem.ContainsValue(netId))
+        if (!Variables.MechBossesAndTheirSummonItem.ContainsValue(netId))
         {
             return;
         }
@@ -216,9 +216,9 @@ public class OnGetData : Event
         short playerId = reader.ReadInt16();
         short type = reader.ReadInt16();
 
-        if (Variables.MechBossAndSummonItem.ContainsKey(type))
+        if (Variables.MechBossesAndTheirSummonItem.ContainsKey(type))
         {
-            Variables.PreventItemComsumption.Add(Variables.MechBossAndSummonItem[type]);
+            Variables.PreventItemComsumption.Add(Variables.MechBossesAndTheirSummonItem[type]);
             args.Handled = true;
         }
     }

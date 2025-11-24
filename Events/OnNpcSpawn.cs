@@ -31,7 +31,7 @@ public class OnNpcSpawn : Event
 
         NPC npc = Main.npc[args.NpcId];
         if (
-            Variables.MechBossAndSummonItem.ContainsKey(npc.netID)
+            Variables.MechBossesAndTheirSummonItem.ContainsKey(npc.netID)
             && !Variables.AllowedToSpawn.Remove(npc.netID)
         )
         {
