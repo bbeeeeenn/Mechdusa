@@ -36,7 +36,7 @@ public static class Utilities
     {
         Item[] inv = plr.TPlayer.inventory;
 
-        int amountToCraft = indexes.Min();
+        int amountToCraft = indexes.Min(i => inv[i].stack);
 
         // Look for a slot where the potential crafted Ocram's Razor can be placed.
         int availableSlotIndex = -1;
