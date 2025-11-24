@@ -43,6 +43,7 @@ public class Rewards
         "- When [GivePerPlayer] is true, every player gets their own reward; if false, the loot drops at Mechdusa's death location.",
         "- [LootDropAmount] determines how many items will be rolled and awarded as rewards.",
         "- [Weight] determines the likelihood of an item being selected by the rarity system. Higher weights make the item more likely to be chosen, while lower weights make it rarer.",
+        "- [Weight] should be greater than or equal to 1",
     };
 
     public Rewards() { }

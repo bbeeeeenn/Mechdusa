@@ -115,7 +115,6 @@ public static class Utilities
         {
             return false;
         }
-        NetMessage.SendData((int)PacketTypes.NpcUpdate, -1, -1, null, NPC.mechQueen);
 
         if (
             NPC.NewNPC(
@@ -181,21 +180,69 @@ public static class Utilities
 
     public static void DropRewards(Vector2 position)
     {
-        Rewards drops = PluginSettings.Config.Rewards;
+        Rewards rewardsConfig = PluginSettings.Config.Rewards;
 
-        int totalWeight = drops.PossibleDrops.Sum(item => item.Weight);
-        if (drops.PossibleDrops.Count < 1 || totalWeight == 0 || drops.dropAmount < 1)
+        int totalWeight = rewardsConfig.PossibleDrops.Sum(item => item.Weight);
+        if (
+            rewardsConfig.PossibleDrops.Count < 1
+            || totalWeight == 0
+            || rewardsConfig.dropAmount < 1
+        )
         {
             return;
         }
 
+        // Give the rewards
+        if (rewardsConfig.givePerPlayer)
+        {
+            foreach (TSPlayer player in TShock.Players)
+            {
+                if (player != null && player.Active)
+                {
+                    List<Item> rewards = RollRewardItems(totalWeight);
+                    foreach (Item item in rewards)
+                    {
+                        player.GiveItem(item.netID, item.stack, item.prefix);
+                    }
+                    player.SendMessage(
+                        $"You got {string.Join("", rewards.Select(r => $"[i/{(r.uniqueStack ? "p" + r.prefix : "s" + r.stack)}:{r.netID}]"))}",
+                        Color.LightCoral
+                    );
+                }
+            }
+        }
+        else
+        {
+            List<Item> rewards = RollRewardItems(totalWeight);
+            foreach (Item item in rewards)
+            {
+                int index = Item.NewItem(
+                    null,
+                    position,
+                    Vector2.Zero,
+                    item.netID,
+                    Stack: item.stack,
+                    prefixGiven: item.prefix
+                );
+                NetMessage.SendData((int)PacketTypes.ItemDrop, -1, -1, null, index);
+            }
+            TShock.Utils.Broadcast(
+                $"The Mechdusa dropped {string.Join("", rewards.Select(r => $"[i/{(r.uniqueStack ? "p" + r.prefix : "s" + r.stack)}:{r.netID}]"))}",
+                Color.LightCoral
+            );
+        }
+    }
+
+    public static List<Item> RollRewardItems(int totalWeight)
+    {
+        Rewards rewardsConfig = PluginSettings.Config.Rewards;
         List<Item> rewards = new();
-        for (int i = 0; i < drops.dropAmount; i++)
+        for (int i = 0; i < rewardsConfig.dropAmount; i++)
         {
             int roll = Random.Shared.Next(totalWeight);
 
             bool done = false;
-            foreach (var item in drops.PossibleDrops)
+            foreach (var item in rewardsConfig.PossibleDrops)
             {
                 if (roll < item.Weight)
                 {
@@ -218,34 +265,6 @@ public static class Utilities
             }
         }
 
-        // Give the rewards
-        if (drops.givePerPlayer)
-        {
-            foreach (TSPlayer player in TShock.Players)
-            {
-                if (player != null && player.Active)
-                {
-                    foreach (Item item in rewards)
-                    {
-                        player.GiveItem(item.netID, item.stack, item.prefix);
-                    }
-                }
-            }
-        }
-        else
-        {
-            foreach (Item item in rewards)
-            {
-                int index = Item.NewItem(
-                    null,
-                    position,
-                    Vector2.Zero,
-                    item.netID,
-                    Stack: item.stack,
-                    prefixGiven: item.prefix
-                );
-                NetMessage.SendData((int)PacketTypes.ItemDrop, -1, -1, null, index);
-            }
-        }
+        return rewards;
     }
 }

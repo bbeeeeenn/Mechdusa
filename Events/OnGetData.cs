@@ -101,7 +101,7 @@ public class OnGetData : Event
         bool spawned = Utilities.TrySpawnMechQueen(player);
         if (spawned)
         {
-            player.TPlayer.inventory[selectedItemSlot].stack--;
+            player.TPlayer.inventory[selectedItemSlot].stack--; // Consume Ocram's Razor
             player.SendData(PacketTypes.PlayerSlot, "", playerid, selectedItemSlot);
         }
     }
@@ -218,7 +218,7 @@ public class OnGetData : Event
 
         if (Variables.MechBossAndSummonItem.ContainsKey(type))
         {
-            Variables.PreventItemUsage.Add(Variables.MechBossAndSummonItem[type]);
+            Variables.PreventItemComsumption.Add(Variables.MechBossAndSummonItem[type]);
             args.Handled = true;
         }
     }
@@ -235,7 +235,7 @@ public class OnGetData : Event
             return;
 
         Player tplayer = Main.player[playerId];
-        if (Variables.PreventItemUsage.Remove(netId) && tplayer.inventory[slot].stack > stack)
+        if (Variables.PreventItemComsumption.Remove(netId) && tplayer.inventory[slot].stack > stack)
         {
             args.Handled = true;
             NetMessage.SendData((int)PacketTypes.PlayerSlot, playerId, -1, null, playerId, slot);

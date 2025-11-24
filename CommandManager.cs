@@ -10,7 +10,7 @@ public class CommandManager
         // Commands
         new Commands.Mechdusa(),
         new CraftOcramRazor(),
-        new Test(),
+        // new Test(),
     };
 
     public static void RegisterAll()

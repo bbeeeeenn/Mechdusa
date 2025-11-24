@@ -13,8 +13,17 @@ public static class Variables
         { NPCID.SkeletronPrime, ItemID.MechanicalSkull },
     };
 
-    public static readonly HashSet<int> PreventItemUsage = new();
-    public static readonly HashSet<int> AllowedSpawn = new();
+    public static readonly HashSet<int> PreventItemComsumption = new();
+    public static readonly HashSet<int> AllowedToSpawn = new();
+
+    public static void AllowMechs()
+    {
+        foreach (int boss in MechBossAndSummonItem.Keys)
+        {
+            AllowedToSpawn.Add(boss);
+        }
+    }
+
     public static readonly HashSet<int> MechsLeft = new();
     private static bool _SpawnedMechQueen = false;
     public static bool SpawnedMechQueen
@@ -31,14 +40,6 @@ public static class Variables
                     MechsLeft.Add(NPC.FindFirstNPC(netId));
                 }
             }
-        }
-    }
-
-    public static void AllowMechs()
-    {
-        foreach (int boss in MechBossAndSummonItem.Keys)
-        {
-            AllowedSpawn.Add(boss);
         }
     }
 }
