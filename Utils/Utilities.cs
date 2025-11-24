@@ -36,15 +36,12 @@ public static class Utilities
     {
         Item[] inv = plr.TPlayer.inventory;
 
-        int minAmountToCraft = 9999;
-        foreach (int i in indexes)
-        {
-            if (minAmountToCraft > inv[i].stack)
-                minAmountToCraft = inv[i].stack;
-        }
+        int amountToCraft = indexes.Min();
 
+        // Look for a slot where the potential crafted Ocram's Razor can be placed.
         int availableSlotIndex = -1;
         for (int i = 0; i < 50; i++)
+        // Look for existing non-full-stacked Ocram's Razor slot.
         {
             Item currItem = inv[i];
             if (
@@ -54,18 +51,19 @@ public static class Utilities
             )
             {
                 availableSlotIndex = i;
-                minAmountToCraft = Math.Min(minAmountToCraft, 9999 - currItem.stack);
+                amountToCraft = Math.Min(amountToCraft, 9999 - currItem.stack);
                 break;
             }
         }
         for (int i = 0; i < 50 && availableSlotIndex == -1; i++)
+        // Look for empty slot if no existing Ocram's Razor slot found.
         {
             Item currItem = inv[i];
             if (
                 currItem.stack == 0
                 || (
                     Variables.MechBossesAndTheirSummonItem.ContainsValue(currItem.netID)
-                    && currItem.stack == minAmountToCraft
+                    && currItem.stack == amountToCraft
                 )
             )
             {
@@ -75,34 +73,36 @@ public static class Utilities
         }
         if (availableSlotIndex == -1)
         {
-            return 0;
+            return 0; // Return if there's no available slot.
         }
 
-        HashSet<int> ignoreSlot = plr.GetData<HashSet<int>>("ignoreSlot") ?? new();
+        HashSet<int> ignoreSlot = plr.GetData<HashSet<int>>("ignoreSlot") ?? new(); // List of handled slots to be ignored.
+
         // Consume Mech summon
         foreach (int slot in indexes)
         {
-            inv[slot].stack -= minAmountToCraft;
+            inv[slot].stack -= amountToCraft;
             ignoreSlot.Add(slot);
             plr.SetData("ignoreSlot", ignoreSlot);
             plr.SendData(PacketTypes.PlayerSlot, "", plr.Index, slot);
         }
-        // Give Ocram's Razor
+        // Below. Give Ocram's Razor
         if (inv[availableSlotIndex].netID == ItemID.MechdusaSummon)
         {
-            inv[availableSlotIndex].stack += minAmountToCraft;
+            inv[availableSlotIndex].stack += amountToCraft;
         }
         else
         {
             Item ocramRazor = TShock.Utils.GetItemById(ItemID.MechdusaSummon);
-            ocramRazor.stack = minAmountToCraft;
+            ocramRazor.stack = amountToCraft;
             inv[availableSlotIndex] = ocramRazor;
         }
         plr.SendData(PacketTypes.PlayerSlot, null, plr.Index, availableSlotIndex);
         plr.SetData("ignoreSlot", new HashSet<int>());
 
+        // Play goblin reforge sound
         NetMessage.PlayNetSound(new NetMessage.NetSoundInfo(plr.TPlayer.position, 213), plr.Index);
-        return minAmountToCraft;
+        return amountToCraft;
     }
 
     public static bool TrySpawnMechQueen(TSPlayer targetPlayer)
