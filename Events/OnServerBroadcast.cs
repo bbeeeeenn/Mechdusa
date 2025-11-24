@@ -1,7 +1,5 @@
-using Microsoft.Xna.Framework;
 using Terraria;
 using TerrariaApi.Server;
-using TShockAPI;
 
 namespace Mechdusa.Events;
 

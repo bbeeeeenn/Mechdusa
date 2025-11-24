@@ -5,7 +5,7 @@ using TShockAPI;
 
 namespace Mechdusa;
 
-public class Utilities
+public static class Utilities
 {
     public static List<int>? FindMechSpawnerIndexes(Player plr)
     {
@@ -105,7 +105,7 @@ public class Utilities
         return minAmountToCraft;
     }
 
-    public static bool TrySpawnMechdusa(TSPlayer targetPlayer)
+    public static bool TrySpawnMechQueen(TSPlayer targetPlayer)
     {
         int onWhichPlayer = targetPlayer.Index;
         NPC.mechQueen = -2;
@@ -174,6 +174,78 @@ public class Utilities
             ) == 200
         )
             return false;
+
+        Variables.SpawnedMechQueen = true;
         return true;
+    }
+
+    public static void DropRewards(Vector2 position)
+    {
+        Rewards drops = PluginSettings.Config.Rewards;
+
+        int totalWeight = drops.PossibleDrops.Sum(item => item.Weight);
+        if (drops.PossibleDrops.Count < 1 || totalWeight == 0 || drops.dropAmount < 1)
+        {
+            return;
+        }
+
+        List<Item> rewards = new();
+        for (int i = 0; i < drops.dropAmount; i++)
+        {
+            int roll = Random.Shared.Next(totalWeight);
+
+            bool done = false;
+            foreach (var item in drops.PossibleDrops)
+            {
+                if (roll < item.Weight)
+                {
+                    Item reward = new()
+                    {
+                        netID = item.NetID,
+                        stack = item.Stack,
+                        prefix = item.PrefixID,
+                    };
+                    reward.netDefaults(item.NetID);
+                    rewards.Add(reward);
+                    done = true;
+                    break;
+                }
+                roll -= item.Weight;
+            }
+            if (!done)
+            {
+                throw new InvalidOperationException("Weighted roll failed.");
+            }
+        }
+
+        // Give the rewards
+        if (drops.givePerPlayer)
+        {
+            foreach (TSPlayer player in TShock.Players)
+            {
+                if (player != null && player.Active)
+                {
+                    foreach (Item item in rewards)
+                    {
+                        player.GiveItem(item.netID, item.stack, item.prefix);
+                    }
+                }
+            }
+        }
+        else
+        {
+            foreach (Item item in rewards)
+            {
+                int index = Item.NewItem(
+                    null,
+                    position,
+                    Vector2.Zero,
+                    item.netID,
+                    Stack: item.stack,
+                    prefixGiven: item.prefix
+                );
+                NetMessage.SendData((int)PacketTypes.ItemDrop, -1, -1, null, index);
+            }
+        }
     }
 }

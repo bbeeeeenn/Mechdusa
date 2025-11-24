@@ -11,8 +11,9 @@ public class EventManager
         // Events
         new OnReload(),
         new OnGetData(),
-        new OnNpcSpawn(),
         new OnServerBroadcast(),
+        new OnNpcSpawn(),
+        new OnNpcKilled(),
     };
 
     public static void RegisterAll(TerrariaPlugin plugin)

@@ -1,9 +1,52 @@
 using Mechdusa.Models;
 using Microsoft.Xna.Framework;
 using Newtonsoft.Json;
+using Terraria.ID;
 using TShockAPI;
 
 namespace Mechdusa;
+
+public class Rewards
+{
+    public class Item
+    {
+        public string Label;
+        public int NetID;
+        public int Weight;
+        public short Stack;
+        public byte PrefixID;
+
+        public Item(string _label, int _netId, int _weight, short _stack = 1, byte _prefix = 0)
+        {
+            Label = _label;
+            NetID = _netId;
+            Weight = _weight;
+            Stack = _stack;
+            PrefixID = _prefix;
+        }
+    }
+
+    [JsonProperty("GivePerPlayer")]
+    public bool givePerPlayer = true;
+
+    [JsonProperty("LootDropAmount")]
+    public int dropAmount = 1;
+
+    [JsonProperty("List of possible drops")]
+    public List<Item> PossibleDrops = new()
+    {
+        new("Waffle Iron PSSHH", ItemID.WaffleIron, 1, _prefix: PrefixID.Legendary),
+        new("Uzi BRRT BRRT", ItemID.Uzi, 2, _prefix: PrefixID.Unreal),
+    };
+    public string[] RewardsHelp =
+    {
+        "- When [GivePerPlayer] is true, every player gets their own reward; if false, the loot drops at Mechdusa's death location.",
+        "- [LootDropAmount] determines how many items will be rolled and awarded as rewards.",
+        "- [Weight] determines the likelihood of an item being selected by the rarity system. Higher weights make the item more likely to be chosen, while lower weights make it rarer.",
+    };
+
+    public Rewards() { }
+}
 
 public class PluginSettings
 {
@@ -16,17 +59,17 @@ public class PluginSettings
     public static PluginSettings Config { get; set; } = new();
     #region Configs
     public bool Enabled = true;
-    public bool DisableIndividualMech = true;
-    public string[] SpawnMechdusaCommandAliases = new string[] { "mechdusa", "mq" };
-    public int SendCraftingHintIntervalSeconds = 10;
-    public string NOTE1 =
-        "Everything will be set to normal if the world is already able to spawn Mechdusa.";
-    public string NOTE2 =
-        "If [DisableIndividualMech] is set to true, player inventories will automatically craft an Ocram's Razor if they have all three different mech spawners.";
-    public string NOTE3 =
-        "The spawn-mechdusa-command requires 'mechdusa.admin' permission. You have to restart the server before the [SpawnMechdusaCommandAliases] changes are applied.";
-    public string NOTE4 =
-        "Spawning multiple Mechdusa instances can cause unexpected behavior because of the max-NPC cap limitation. Though, this can only be achieved using the command.";
+    public bool DisableIndividualMech = false;
+    public string[] SpawnMechdusaCommandAliases = { "mechdusa", "mq" };
+    public int SendCraftingHintIntervalSeconds = 20;
+    public string[] Help =
+    {
+        "- Everything will be set to normal if the world is already able to spawn Mechdusa.",
+        "- If [DisableIndividualMech] is set to true, player inventories will automatically craft an Ocram's Razor if they have all three different mech spawners.",
+        "- The spawn-mechdusa-command requires 'mechdusa.admin' permission. You have to restart the server before the [SpawnMechdusaCommandAliases] changes are applied.",
+        "- Spawning multiple Mechdusa instances can cause unexpected behavior because of the max-NPC cap limitation. Though, this can only be achieved using the command.",
+    };
+    public Rewards Rewards = new();
     #endregion
     public static void Save()
     {
@@ -56,7 +99,11 @@ public class PluginSettings
             {
                 string json = File.ReadAllText(ConfigPath);
                 PluginSettings? deserializedConfig = JsonConvert.DeserializeObject<PluginSettings>(
-                    json
+                    json,
+                    new JsonSerializerSettings()
+                    {
+                        ObjectCreationHandling = ObjectCreationHandling.Replace,
+                    }
                 );
                 if (deserializedConfig != null)
                 {

@@ -48,7 +48,7 @@ public class OnGetData : Event
             }
             case PacketTypes.SpawnBossorInvasion:
             {
-                DisableMechSpawn(args);
+                DisableBossMechSpawn(args);
                 break;
             }
             case PacketTypes.PlayerUpdate:
@@ -58,17 +58,6 @@ public class OnGetData : Event
             }
             default:
                 break;
-        }
-    }
-
-    private static ushort _index = 0;
-    private static ushort Index
-    {
-        get => _index;
-        set
-        {
-            if (value >= 0)
-                _index = value;
         }
     }
 
@@ -88,21 +77,6 @@ public class OnGetData : Event
         if (player == null || !player.Active)
             return;
 
-        // // Temp - Play SFXs
-        // bool left = control[2],
-        //     right = control[3];
-        // if (left && !right)
-        // {
-        //     player.SendMessage($"Playing sound index: {--Index}", Color.AliceBlue);
-        //     NetMessage.PlayNetSound(new NetMessage.NetSoundInfo(player.TPlayer.position, Index));
-        // }
-        // else if (!left && right)
-        // {
-        //     player.SendMessage($"Playing sound index: {++Index}", Color.AliceBlue);
-        //     NetMessage.PlayNetSound(new NetMessage.NetSoundInfo(player.TPlayer.position, Index));
-        // }
-        // // Temp
-
         bool useItem = control[5];
         Item selectedItem = player.TPlayer.inventory[selectedItemSlot];
         if (Main.dayTime || !useItem || selectedItem.netID != ItemID.MechdusaSummon)
@@ -120,8 +94,11 @@ public class OnGetData : Event
         }
 
         // Spawn mechdusa
-        Variables.AllowMechs(); // Temporarily allow spawning mechs
-        bool spawned = Utilities.TrySpawnMechdusa(player);
+        if (PluginSettings.Config.DisableIndividualMech)
+        {
+            Variables.AllowMechs(); // Temporarily allow spawning mechs
+        }
+        bool spawned = Utilities.TrySpawnMechQueen(player);
         if (spawned)
         {
             player.TPlayer.inventory[selectedItemSlot].stack--;
@@ -225,7 +202,7 @@ public class OnGetData : Event
         }
     }
 
-    private static void DisableMechSpawn(GetDataEventArgs args)
+    private static void DisableBossMechSpawn(GetDataEventArgs args)
     {
         if (!PluginSettings.Config.DisableIndividualMech)
         {
@@ -258,11 +235,7 @@ public class OnGetData : Event
             return;
 
         Player tplayer = Main.player[playerId];
-        if (
-            Variables.PreventItemUsage.Remove(netId)
-            && Variables.MechBossAndSummonItem.ContainsValue(netId)
-            && tplayer.inventory[slot].stack > stack
-        )
+        if (Variables.PreventItemUsage.Remove(netId) && tplayer.inventory[slot].stack > stack)
         {
             args.Handled = true;
             NetMessage.SendData((int)PacketTypes.PlayerSlot, playerId, -1, null, playerId, slot);

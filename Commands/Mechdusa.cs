@@ -24,7 +24,7 @@ public class Mechdusa : Models.Command
                 return;
             }
             Variables.AllowMechs();
-            spawned = Utilities.TrySpawnMechdusa(player);
+            spawned = Utilities.TrySpawnMechQueen(player);
         }
         else
         {
@@ -55,7 +55,7 @@ public class Mechdusa : Models.Command
                 return;
             }
             Variables.AllowMechs();
-            spawned = Utilities.TrySpawnMechdusa(targetPlayer);
+            spawned = Utilities.TrySpawnMechQueen(targetPlayer);
         }
 
         if (spawned)
