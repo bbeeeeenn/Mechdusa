@@ -7,11 +7,11 @@ namespace Mechdusa;
 
 public static class Utilities
 {
-    public static List<int>? FindMechSpawnerIndexes(Player plr)
+    public static HashSet<int>? FindMechSpawnerIndexes(Player plr)
     {
-        List<int> indexes = new();
+        HashSet<int> indexes = new();
         Item[] inv = plr.inventory;
-        List<int> found = new();
+        HashSet<int> found = new();
         for (int i = 0; i < 50 && indexes.Count < 3; i++)
         {
             Item currItem = inv[i];
@@ -32,11 +32,11 @@ public static class Utilities
         return null;
     }
 
-    public static int TryCraftOcramRazor(TSPlayer plr, List<int> indexes)
+    public static int TryCraftOcramRazor(TSPlayer plr, HashSet<int> mechSpawnerInvIndexes)
     {
         Item[] inv = plr.TPlayer.inventory;
 
-        int amountToCraft = indexes.Min(i => inv[i].stack);
+        int amountToCraft = mechSpawnerInvIndexes.Min(i => inv[i].stack);
 
         // Look for a slot where the potential crafted Ocram's Razor can be placed.
         int availableSlotIndex = -1;
@@ -79,7 +79,7 @@ public static class Utilities
         HashSet<int> ignoreSlot = plr.GetData<HashSet<int>>("ignoreSlot") ?? new(); // List of handled slots to be ignored.
 
         // Consume Mech summon
-        foreach (int slot in indexes)
+        foreach (int slot in mechSpawnerInvIndexes)
         {
             inv[slot].stack -= amountToCraft;
             ignoreSlot.Add(slot);

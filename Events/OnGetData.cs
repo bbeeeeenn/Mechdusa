@@ -145,7 +145,7 @@ public class OnGetData : Event
         Main.player[playerId].inventory[slot] = item;
         args.Handled = true;
 
-        List<int>? indexes = Utilities.FindMechSpawnerIndexes(player.TPlayer);
+        HashSet<int>? indexes = Utilities.FindMechSpawnerIndexes(player.TPlayer);
         if (indexes == null)
         {
             return;
