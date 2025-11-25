@@ -24,7 +24,7 @@ public static class Variables
         }
     }
 
-    public static readonly HashSet<int> MechsLeft = new();
+    public static readonly HashSet<int> MechsLeft = new(4);
     private static bool _SpawnedMechQueen = false;
     public static bool SpawnedMechQueen
     {

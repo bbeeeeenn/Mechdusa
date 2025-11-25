@@ -30,7 +30,7 @@ public class CraftOcramRazor : Models.Command
             return;
         }
 
-        List<int>? bossSpawnerInvIndexes = Utilities.FindMechSpawnerIndexes(args.Player.TPlayer);
+        HashSet<int>? bossSpawnerInvIndexes = Utilities.FindMechSpawnerIndexes(args.Player.TPlayer);
         if (bossSpawnerInvIndexes == null)
         {
             player.SendMessage(
