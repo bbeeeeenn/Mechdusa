@@ -6,49 +6,6 @@ using TShockAPI;
 
 namespace Mechdusa;
 
-public class Rewards
-{
-    public class Item
-    {
-        public string Label;
-        public int NetID;
-        public int Weight;
-        public short Stack;
-        public byte PrefixID;
-
-        public Item(string _label, int _netId, int _weight, short _stack = 1, byte _prefix = 0)
-        {
-            Label = _label;
-            NetID = _netId;
-            Weight = _weight;
-            Stack = _stack;
-            PrefixID = _prefix;
-        }
-    }
-
-    [JsonProperty("GivePerPlayer")]
-    public bool givePerPlayer = true;
-
-    [JsonProperty("LootDropAmount")]
-    public int dropAmount = 1;
-
-    [JsonProperty("List of possible drops")]
-    public List<Item> PossibleDrops = new()
-    {
-        new("Waffle Iron PSSHH", ItemID.WaffleIron, 1, _prefix: PrefixID.Legendary),
-        new("Uzi BRRT BRRT", ItemID.Uzi, 2, _prefix: PrefixID.Unreal),
-    };
-    public string[] RewardsHelp =
-    {
-        "- When [GivePerPlayer] is true, every player gets their own reward; if false, the loot drops at Mechdusa's death location.",
-        "- [LootDropAmount] determines how many items will be rolled and awarded as rewards.",
-        "- [Weight] determines the likelihood of an item being selected by the rarity system. Higher weights make the item more likely to be chosen, while lower weights make it rarer.",
-        "- [Weight] should be greater than or equal to 1",
-    };
-
-    public Rewards() { }
-}
-
 public class PluginSettings
 {
     public static readonly string PluginDirectory = Path.Combine(
@@ -62,6 +19,7 @@ public class PluginSettings
     public bool Enabled = true;
     public bool DisableIndividualMech = false;
     public string[] SpawnMechdusaCommandAliases = { "mechdusa", "mq" };
+    public string[] ShowDropsCommandAliases = { "mechdusadrops", "mqdrops" };
     public int SendCraftingHintIntervalSeconds = 20;
     public string[] Help =
     {
@@ -108,7 +66,11 @@ public class PluginSettings
                 );
                 if (deserializedConfig != null)
                 {
+                    deserializedConfig.Rewards.PossibleDrops.Sort(
+                        (a, b) => b.Weight.CompareTo(a.Weight)
+                    );
                     Config = deserializedConfig;
+                    Save();
                     return new ResponseMessage()
                     {
                         Text = $"[{TShockPlugin.PluginName}] Loaded config.",
@@ -139,4 +101,47 @@ public class PluginSettings
             }
         }
     }
+}
+
+public class Rewards
+{
+    public class Drop
+    {
+        public string Label;
+        public int NetID;
+        public int Weight;
+        public short Stack;
+        public byte PrefixID;
+
+        public Drop(string _label, int _netId, int _weight, short _stack = 1, byte _prefix = 0)
+        {
+            Label = _label;
+            NetID = _netId;
+            Weight = _weight;
+            Stack = _stack;
+            PrefixID = _prefix;
+        }
+    }
+
+    [JsonProperty("GivePerPlayer")]
+    public bool givePerPlayer = true;
+
+    [JsonProperty("LootDropAmount")]
+    public int dropAmount = 1;
+
+    [JsonProperty("List of possible drops")]
+    public List<Drop> PossibleDrops = new()
+    {
+        new("Waffle Iron PSSHH", ItemID.WaffleIron, 1, _prefix: PrefixID.Legendary),
+        new("Uzi BRRT BRRT", ItemID.Uzi, 2, _prefix: PrefixID.Unreal),
+    };
+    public string[] RewardsHelp =
+    {
+        "- When [GivePerPlayer] is true, every player gets their own reward; if false, the loot drops at Mechdusa's death location.",
+        "- [LootDropAmount] determines how many items will be rolled and awarded as rewards.",
+        "- [Weight] determines the likelihood of an item being selected by the rarity system. Higher weights make the item more likely to be chosen, while lower weights make it rarer.",
+        "- [Weight] should be greater than or equal to 1",
+    };
+
+    public Rewards() { }
 }

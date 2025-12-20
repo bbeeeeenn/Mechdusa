@@ -205,8 +205,8 @@ public static class Utilities
                         player.GiveItem(item.netID, item.stack, item.prefix);
                     }
                     player.SendMessage(
-                        $"You got {string.Join("", rewards.Select(r => $"[i/{(r.uniqueStack ? "p" + r.prefix : "s" + r.stack)}:{r.netID}]"))}",
-                        Color.LightCoral
+                        $"You got {string.Join("", rewards.Select(r => $"[i/{(r.CanHavePrefixes() ? "p" + r.prefix : "s" + r.stack)}:{r.netID}]"))}",
+                        Color.OrangeRed
                     );
                 }
             }
@@ -227,8 +227,8 @@ public static class Utilities
                 NetMessage.SendData((int)PacketTypes.ItemDrop, -1, -1, null, index);
             }
             TShock.Utils.Broadcast(
-                $"The Mechdusa dropped {string.Join("", rewards.Select(r => $"[i/{(r.uniqueStack ? "p" + r.prefix : "s" + r.stack)}:{r.netID}]"))}",
-                Color.LightCoral
+                $"The Mechdusa dropped {string.Join("", rewards.Select(r => $"[i/{(r.CanHavePrefixes() ? "p" + r.prefix : "s" + r.stack)}:{r.netID}]"))}",
+                Color.OrangeRed
             );
         }
     }
@@ -246,13 +246,9 @@ public static class Utilities
             {
                 if (roll < item.Weight)
                 {
-                    Item reward = new()
-                    {
-                        netID = item.NetID,
-                        stack = item.Stack,
-                        prefix = item.PrefixID,
-                    };
-                    reward.netDefaults(item.NetID);
+                    Item reward = TShock.Utils.GetItemById(item.NetID);
+                    reward.stack = item.Stack;
+                    reward.prefix = item.PrefixID;
                     rewards.Add(reward);
                     done = true;
                     break;

@@ -34,6 +34,7 @@ public class OnNpcKilled : Models.Event
             if (Variables.MechsLeft.Count == 0)
             {
                 // Jackpot
+                TShock.Utils.Broadcast("The Mechdusa has been defeated!", Color.BlueViolet);
                 Utilities.DropRewards(args.npc.position);
                 Variables.SpawnedMechQueen = false;
             }
