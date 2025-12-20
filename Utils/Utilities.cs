@@ -242,18 +242,26 @@ public static class Utilities
             int roll = Random.Shared.Next(totalWeight);
 
             bool done = false;
-            foreach (var item in rewardsConfig.PossibleDrops)
+            foreach (Rewards.Drop drop in rewardsConfig.PossibleDrops)
             {
-                if (roll < item.Weight)
+                if (roll < drop.Weight)
                 {
-                    Item reward = TShock.Utils.GetItemById(item.NetID);
-                    reward.stack = item.Stack;
-                    reward.prefix = item.PrefixID;
-                    rewards.Add(reward);
+                    Item? existingItemReward = rewards.FirstOrDefault(e => e.netID == drop.NetID);
+                    if (existingItemReward != null && existingItemReward.maxStack != 1)
+                    {
+                        existingItemReward.stack += drop.Stack;
+                    }
+                    else
+                    {
+                        Item reward = TShock.Utils.GetItemById(drop.NetID);
+                        reward.stack = drop.Stack;
+                        reward.prefix = drop.PrefixID;
+                        rewards.Add(reward);
+                    }
                     done = true;
                     break;
                 }
-                roll -= item.Weight;
+                roll -= drop.Weight;
             }
             if (!done)
             {
