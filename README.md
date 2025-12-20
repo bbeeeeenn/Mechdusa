@@ -7,7 +7,8 @@ A plugin that allows non-`getfixedboi` worlds to spawn Mechdusa.
 -  **`Enabled`** (Default: `true`) — Turns the plugin on or off.
 -  **`DisableIndividualMech`** (Default: `false`) — If `true`, players cannot summon the three mech bosses individually. If a player has all three mech spawners, they will automatically craft into **Ocram’s Razor**.
 -  **`SpawnMechdusaCommandAliases`** — The list of command aliases used to spawn Mechdusa via command.  
-   Requires the `mechdusa.admin` permission.  
+   Requires the `mechdusa.admin` permission.
+-  **`ShowDropsCommandAliases`** — The list of command aliases used to show the rewards when the Mechdusa is defeated.  
    _Note:_ Restart the server for alias changes to apply.
 -  **`SendCraftingHintIntervalSeconds`** (Default: `20`) — Controls how frequently players are notified about how to obtain **Ocram’s Razor**.
 
