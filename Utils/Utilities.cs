@@ -16,12 +16,12 @@ public static class Utilities
         {
             Item currItem = inv[i];
             if (
-                Variables.MechBossesAndTheirSummonItem.ContainsValue(currItem.netID)
+                Variables.MechBossesAndTheirSummonItem.ContainsValue(currItem.type)
                 && currItem.stack > 0
-                && !found.Contains(currItem.netID)
+                && !found.Contains(currItem.type)
             )
             {
-                found.Add(currItem.netID);
+                found.Add(currItem.type);
                 indexes.Add(i);
             }
         }
@@ -45,7 +45,7 @@ public static class Utilities
         {
             Item currItem = inv[i];
             if (
-                currItem.netID == ItemID.MechdusaSummon
+                currItem.type == ItemID.MechdusaSummon
                 && currItem.stack < 9999
                 && currItem.stack >= 1
             )
@@ -62,7 +62,7 @@ public static class Utilities
             if (
                 currItem.stack == 0
                 || (
-                    Variables.MechBossesAndTheirSummonItem.ContainsValue(currItem.netID)
+                    Variables.MechBossesAndTheirSummonItem.ContainsValue(currItem.type)
                     && currItem.stack == amountToCraft
                 )
             )
@@ -87,7 +87,7 @@ public static class Utilities
             plr.SendData(PacketTypes.PlayerSlot, "", plr.Index, slot);
         }
         // Below. Give Ocram's Razor
-        if (inv[availableSlotIndex].netID == ItemID.MechdusaSummon)
+        if (inv[availableSlotIndex].type == ItemID.MechdusaSummon)
         {
             inv[availableSlotIndex].stack += amountToCraft;
         }
@@ -202,10 +202,10 @@ public static class Utilities
                     List<Item> rewards = RollRewardItems(totalWeight);
                     foreach (Item item in rewards)
                     {
-                        player.GiveItem(item.netID, item.stack, item.prefix);
+                        player.GiveItem(item.type, item.stack, item.prefix);
                     }
                     player.SendMessage(
-                        $"You got {string.Join("", rewards.Select(r => $"[i/{(r.CanHavePrefixes() ? "p" + r.prefix : "s" + r.stack)}:{r.netID}]"))}",
+                        $"You got {string.Join("", rewards.Select(r => $"[i/{(r.CanHavePrefixes() ? "p" + r.prefix : "s" + r.stack)}:{r.type}]"))}",
                         Color.OrangeRed
                     );
                 }
@@ -220,14 +220,14 @@ public static class Utilities
                     null,
                     position,
                     Vector2.Zero,
-                    item.netID,
+                    item.type,
                     Stack: item.stack,
                     prefixGiven: item.prefix
                 );
                 NetMessage.SendData((int)PacketTypes.ItemDrop, -1, -1, null, index);
             }
             TShock.Utils.Broadcast(
-                $"The Mechdusa dropped {string.Join("", rewards.Select(r => $"[i/{(r.CanHavePrefixes() ? "p" + r.prefix : "s" + r.stack)}:{r.netID}]"))}",
+                $"The Mechdusa dropped {string.Join("", rewards.Select(r => $"[i/{(r.CanHavePrefixes() ? "p" + r.prefix : "s" + r.stack)}:{r.type}]"))}",
                 Color.OrangeRed
             );
         }
@@ -246,7 +246,7 @@ public static class Utilities
             {
                 if (roll < drop.Weight)
                 {
-                    Item? existingItemReward = rewards.FirstOrDefault(e => e.netID == drop.NetID);
+                    Item? existingItemReward = rewards.FirstOrDefault(e => e.type == drop.NetID);
                     if (existingItemReward != null && existingItemReward.maxStack != 1)
                     {
                         existingItemReward.stack += drop.Stack;

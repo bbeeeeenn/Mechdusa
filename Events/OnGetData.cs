@@ -79,7 +79,7 @@ public class OnGetData : Event
 
         bool useItem = control[5];
         Item selectedItem = player.TPlayer.inventory[selectedItemSlot];
-        if (Main.dayTime || !useItem || selectedItem.netID != ItemID.MechdusaSummon)
+        if (Main.dayTime || !useItem || selectedItem.type != ItemID.MechdusaSummon)
         {
             return;
         }
